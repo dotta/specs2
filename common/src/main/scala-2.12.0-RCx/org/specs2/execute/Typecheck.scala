@@ -46,25 +46,25 @@ object Typecheck {
             c.parse(codeString)
           } catch {
             case ParseException(_, m) if ps.deferParsing =>
-              q"Typechecked($codeString, ParseError($m))"
+              Apply(Ident(TermName("Typechecked")), List(Literal(Constant(codeString)), Apply(Ident(TermName("ParseError")), List(Literal(Constant(m))))))
             case ParseException(_, m) if !ps.deferParsing =>
               c.abort(c.enclosingPosition, m)
             case e: Exception =>
-              q"Typechecked($codeString, UnexpectedTypecheckError(${e.getMessage}))"
+              Apply(Ident(TermName("Typechecked")), List(Literal(Constant(codeString)), Apply(Ident(TermName("UnexpectedTypecheckError")), List(Literal(Constant(e.getMessage))))))
           }
           c.typecheck(parsed, withMacrosDisabled = true)
           // if that's ok parse with macros
           try {
             c.typecheck(parsed)
-            q"Typechecked($codeString, TypecheckSuccess)"
+            Apply(Ident(TermName("Typechecked")), List(Literal(Constant(codeString)), Ident(TermName("TypecheckSuccess"))))
           } catch {
             // got a typecheck exception with macros
             case TypecheckException(_, m) if ps.deferMacros =>
-              q"Typechecked($codeString, TypecheckError($m))"
+              Apply(Ident(TermName("Typechecked")), List(Literal(Constant(codeString)), Apply(Ident(TermName("TypecheckError")), List(Literal(Constant(m))))))
             case TypecheckException(_, m) if !ps.deferMacros =>
               c.abort(c.enclosingPosition, m)
             case e: Exception =>
-              q"Typechecked($codeString, UnexpectedTypecheckError(${e.getMessage}))"
+              Apply(Ident(TermName("Typechecked")), List(Literal(Constant(codeString)), Apply(Ident(TermName("UnexpectedTypecheckError")), List(Literal(Constant(e.getMessage))))))
           }
         } catch {
           // got a typecheck exception without macros
@@ -72,10 +72,11 @@ object Typecheck {
           case TypecheckException(_, m) if !ps.deferImplicits && m.startsWith("could not find implicit value") =>
             c.abort(c.enclosingPosition, m)
           case TypecheckException(_, m) =>
-            q"Typechecked($codeString, TypecheckError($m))"
+            Apply(Ident(TermName("Typechecked")), List(Literal(Constant(codeString)), Apply(Ident(TermName("TypecheckError")), List(Literal(Constant(m))))))
         }
 
-      case other => q"""Typechecked("", CanTypecheckLiteralsOnly)"""
+      case other =>
+        Apply(Ident(TermName("Typechecked")), List(Literal(Constant("")), Ident(TermName("CanTypecheckLiteralsOnly"))))
     }
   }
 
@@ -103,7 +104,7 @@ object Typecheck {
 
     val texts = c.prefix.tree match { case Apply(_, List(Apply(_, ts))) => ts }
     if (texts.size != 1)
-      q"""Typechecked(${texts.mkString}, TypecheckError("can only typecheck an interpolated string with no variables at the moment"))"""
+      Apply(Ident(TermName("Typechecked")), List(Literal(Constant(texts.mkString)), Apply(Ident(TermName("TypecheckError")), List(Literal(Constant("can only typecheck an interpolated string with no variables at the moment"))))))
     else {
       val codeString = texts.head.asInstanceOf[Literal].value.value.asInstanceOf[String]
         // evaluate the parameters
@@ -116,11 +117,11 @@ object Typecheck {
             c.parse(codeString)
           } catch {
             case ParseException(_, m) if ps.deferParsing =>
-              q"Typechecked($codeString, ParseError($m))"
+              Apply(Ident(TermName("Typechecked")), List(Literal(Constant(codeString)), Apply(Ident(TermName("ParseError")), List(Literal(Constant(m))))))
             case ParseException(_, m) if !ps.deferParsing =>
               c.abort(c.enclosingPosition, m)
             case e: Exception =>
-              q"Typechecked($codeString, UnexpectedTypecheckError(${e.getMessage}))"
+              Apply(Ident(TermName("Typechecked")), List(Literal(Constant(codeString)), Apply(Ident(TermName("UnexpectedTypecheckError")), List(Literal(Constant(e.getMessage))))))
           }
           c.typecheck(parsed, withMacrosDisabled = true)
           // if that's ok parse with macros
@@ -129,11 +130,11 @@ object Typecheck {
           } catch {
             // got a typecheck exception with macros
             case TypecheckException(_, m) if ps.deferMacros =>
-              q"Typechecked($codeString, TypecheckError($m))"
+              Apply(Ident(TermName("Typechecked")), List(Literal(Constant(codeString)), Apply(Ident(TermName("TypecheckError")), List(Literal(Constant(m))))))
             case TypecheckException(_, m) if !ps.deferMacros =>
               c.abort(c.enclosingPosition, m)
             case e: Exception =>
-              q"Typechecked($codeString, UnexpectedTypecheckError(${e.getMessage}))"
+              Apply(Ident(TermName("Typechecked")), List(Literal(Constant(codeString)), Apply(Ident(TermName("UnexpectedTypecheckError")), List(Literal(Constant(e.getMessage))))))
           }
         } catch {
           // got a typecheck exception without macros
@@ -141,7 +142,7 @@ object Typecheck {
           case TypecheckException(_, m) if !ps.deferImplicits && m.startsWith("could not find implicit value") =>
             c.abort(c.enclosingPosition, m)
           case TypecheckException(_, m) =>
-            q"Typechecked($codeString, TypecheckError($m))"
+            Apply(Ident(TermName("Typechecked")), List(Literal(Constant(codeString)), Apply(Ident(TermName("TypecheckError")), List(Literal(Constant(m))))))
         }
     }
   }

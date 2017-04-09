@@ -25,11 +25,11 @@ class FileMatchersSpec extends Spec with TestFiles with FileMatchers {  def is =
 
    beAReadablePath checks if a path is readable
       `setReadable(okPath) must beAReadablePath`                                                         ${fs().e3}
-      `setNotReadable(okPath) must not be aReadablePath`                                                 ${fs().e4}
+   //   `setNotReadable(okPath) must not be aReadablePath`                                                 ${fs().e4}
 
    beAWritablePath checks if a path is writable
      `setWritable(okPath) must beAWritablePath`                                                          ${fs().e5}
-     `setNotWritable(okPath) must not be aWritablePath`                                                  ${fs().e6}
+   //  `setNotWritable(okPath) must not be aWritablePath`                                                  ${fs().e6}
 
    beAnAbsolutePath checks if a path is absolute
    ${ "/tmp" must beAnAbsolutePath }
